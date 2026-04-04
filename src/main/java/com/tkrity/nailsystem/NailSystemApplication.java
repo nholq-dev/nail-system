@@ -1,13 +1,13 @@
-package com.tkrity.NailChain;
+package com.tkrity.nailsystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NailChainApplication {
+public class NailSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NailChainApplication.class, args);
+		SpringApplication.run(NailSystemApplication.class, args);
 	}
 
 }
