@@ -1,0 +1,25 @@
+package com.tkrity.nailsystem.exception.handler;
+
+import com.tkrity.nailsystem.exception.BaseException;
+import com.tkrity.nailsystem.exception.Error;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(value = {Exception.class})
+    private ResponseEntity<Object> handleCommonException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Error.builder().message(e.getMessage()).build());
+    }
+
+    @ExceptionHandler(value = {BaseException.class})
+    private ResponseEntity<Object> handleCommonException(final BaseException e) {
+        return ResponseEntity.status(e.getStatus())
+                .body(Error.builder().message(e.getMessage()).build());
+    }
+}

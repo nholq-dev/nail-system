@@ -1,0 +1,73 @@
+package com.tkrity.nailsystem.user.service.impl;
+
+
+import com.tkrity.nailsystem.user.entity.User;
+import com.tkrity.nailsystem.user.model.UserRequest;
+import com.tkrity.nailsystem.user.model.UserResponse;
+import com.tkrity.nailsystem.user.repository.UserRepository;
+import com.tkrity.nailsystem.user.service.UserService;
+import jakarta.annotation.Resource;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
+import java.util.Optional;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Resource
+    private UserRepository userRepository;
+
+    @Override
+    public UserResponse getUserById(Long id){
+        Optional<User> optUser = userRepository.findById(id);
+
+        if(optUser.isPresent()){
+            User dataUser = optUser.get();
+            return new UserResponse(
+                    dataUser.getId(),
+                    dataUser.getUserCode(),
+                    dataUser.getAddress(),
+                    dataUser.getFullName()
+            );
+        }else{
+           return null;
+        }
+
+    }
+
+    @Override
+    public UserResponse getUserByUserCode(String UserCode) {
+        return null;
+    }
+
+    @Override
+    public UserResponse getCurrentUser() {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public UserResponse CreateUser(UserRequest request) {
+        User userCreate = new User();
+        userCreate.setUserCode(request.getUserCode());
+        userCreate.setFirstName(request.getFirstName());
+        userCreate.setLastName(request.getLastName());
+        userCreate.setAddress(request.getAddress());
+        userCreate.setPassword("Password@123");
+        if(userCreate.getUserCode() != null){
+            userRepository.save(userCreate);
+            System.out.println("done");
+            return new UserResponse(
+                    userCreate.getId(),
+                    userCreate.getUserCode(),
+                    userCreate.getAddress(),
+                    userCreate.getFullName()
+            );
+        }else {
+            return null;
+        }
+    }
+
+}
