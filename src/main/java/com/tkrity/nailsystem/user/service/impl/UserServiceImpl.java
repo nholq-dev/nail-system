@@ -1,6 +1,8 @@
 package com.tkrity.nailsystem.user.service.impl;
 
 
+import com.tkrity.nailsystem.exception.BadRequestException;
+import com.tkrity.nailsystem.exception.NotFoundException;
 import com.tkrity.nailsystem.user.entity.User;
 import com.tkrity.nailsystem.user.model.UserRequest;
 import com.tkrity.nailsystem.user.model.UserResponse;
@@ -10,7 +12,7 @@ import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,14 +34,25 @@ public class UserServiceImpl implements UserService {
                     dataUser.getFullName()
             );
         }else{
-           return null;
+            throw new NotFoundException("User Not found");
         }
 
     }
 
     @Override
     public UserResponse getUserByUserCode(String UserCode) {
-        return null;
+        Optional<User> optUser = userRepository.findUserByUserCode(UserCode);
+        if(optUser.isPresent()){
+            User dataUser = optUser.get();
+            return new UserResponse(
+                    dataUser.getId(),
+                    dataUser.getUserCode(),
+                    dataUser.getAddress(),
+                    dataUser.getFullName()
+            );
+        }else{
+            throw new NotFoundException("User Not found");
+        }
     }
 
     @Override
@@ -56,17 +69,26 @@ public class UserServiceImpl implements UserService {
         userCreate.setLastName(request.getLastName());
         userCreate.setAddress(request.getAddress());
         userCreate.setPassword("Password@123");
+        UserResponse userExist = getUserByUserCode(userCreate.getUserCode());
         if(userCreate.getUserCode() != null){
-            userRepository.save(userCreate);
-            System.out.println("done");
-            return new UserResponse(
-                    userCreate.getId(),
-                    userCreate.getUserCode(),
-                    userCreate.getAddress(),
-                    userCreate.getFullName()
-            );
+            if(Objects.equals(userExist.userCode(), "")) {
+                try {
+                    userRepository.save(userCreate);
+                } catch (Exception ignored) {
+                    throw new BadRequestException("Xảy ra lỗi hệ thống");
+                }
+                System.out.println("done");
+                return new UserResponse(
+                        userCreate.getId(),
+                        userCreate.getUserCode(),
+                        userCreate.getAddress(),
+                        userCreate.getFullName()
+                );
+            }else{
+                throw new BadRequestException("UserCode đã tồn tại trong hệ thống");
+            }
         }else {
-            return null;
+            throw new BadRequestException("User Invalid");
         }
     }
 

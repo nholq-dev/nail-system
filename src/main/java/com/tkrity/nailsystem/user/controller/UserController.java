@@ -18,6 +18,9 @@ public class UserController {
        return userService.getUserById(id);
    }
 
+   @GetMapping("/userCode/{userCode}")
+   public UserResponse getUserByUserCode(@PathVariable String userCode){return userService.getUserByUserCode(userCode);}
+
    @PostMapping
    public UserResponse createUser(@RequestBody UserRequest request){
       return userService.CreateUser(request);
