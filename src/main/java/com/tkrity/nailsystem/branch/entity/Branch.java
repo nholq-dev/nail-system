@@ -13,7 +13,7 @@ public class Branch {
     @Id
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String branchCode;
 
     @Column(nullable = false)
