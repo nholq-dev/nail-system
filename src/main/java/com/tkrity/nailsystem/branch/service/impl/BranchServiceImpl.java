@@ -58,7 +58,11 @@ public class BranchServiceImpl implements BranchService {
                 throw new BadRequestException("Branch đã tồn tại");
 
             }else{
-                branchRepository.save(branchCreate);
+                try {
+                    branchRepository.save(branchCreate);
+                } catch (Exception e){
+                    throw new BadRequestException("Lỗi hệ thống");
+                }
                 return new BranchResponse(branchCreate.getId(),
                         branchCreate.getBranchCode(),
                         branchCreate.getBranchName()

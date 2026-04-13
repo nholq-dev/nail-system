@@ -12,7 +12,6 @@ import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,10 +21,10 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public UserResponse getUserById(Long id){
+    public UserResponse getUserById(Long id) {
         Optional<User> optUser = userRepository.findById(id);
 
-        if(optUser.isPresent()){
+        if (optUser.isPresent()) {
             User dataUser = optUser.get();
             return new UserResponse(
                     dataUser.getId(),
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
                     dataUser.getAddress(),
                     dataUser.getFullName()
             );
-        }else{
+        } else {
             throw new NotFoundException("User Not found");
         }
 
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByUserCode(String UserCode) {
         Optional<User> optUser = userRepository.findUserByUserCode(UserCode);
-        if(optUser.isPresent()){
+        if (optUser.isPresent()) {
             User dataUser = optUser.get();
             return new UserResponse(
                     dataUser.getId(),
@@ -50,7 +49,7 @@ public class UserServiceImpl implements UserService {
                     dataUser.getAddress(),
                     dataUser.getFullName()
             );
-        }else{
+        } else {
             throw new NotFoundException("User Not found");
         }
     }
@@ -69,27 +68,18 @@ public class UserServiceImpl implements UserService {
         userCreate.setLastName(request.getLastName());
         userCreate.setAddress(request.getAddress());
         userCreate.setPassword("Password@123");
-        UserResponse userExist = getUserByUserCode(userCreate.getUserCode());
-        if(userCreate.getUserCode() != null){
-            if(Objects.equals(userExist.userCode(), "")) {
-                try {
-                    userRepository.save(userCreate);
-                } catch (Exception ignored) {
-                    throw new BadRequestException("Xảy ra lỗi hệ thống");
-                }
-                System.out.println("done");
-                return new UserResponse(
-                        userCreate.getId(),
-                        userCreate.getUserCode(),
-                        userCreate.getAddress(),
-                        userCreate.getFullName()
-                );
-            }else{
-                throw new BadRequestException("UserCode đã tồn tại trong hệ thống");
-            }
-        }else {
-            throw new BadRequestException("User Invalid");
+        try {
+            userRepository.save(userCreate);
+        } catch (Exception ignored) {
+            throw new BadRequestException("Xảy ra lỗi hệ thống");
         }
-    }
+        System.out.println("done");
+        return new UserResponse(
+                userCreate.getId(),
+                userCreate.getUserCode(),
+                userCreate.getAddress(),
+                userCreate.getFullName()
+        );
 
+    }
 }
